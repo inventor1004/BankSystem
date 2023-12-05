@@ -1,0 +1,75 @@
+h2 {
+    color:white;
+}
+
+#main-page {
+    margin: 0 auto;
+    padding: 18px;
+    border: 1px solid #006703;
+    border-radius: 10px;
+    box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    width: 40%;
+    margin-top: 3rem;
+    background-color: #399d4e; 
+}
+
+#accounts {
+    display: flex;
+    justify-content: center;
+    gap: 10rem;
+}
+
+.display-value {
+    font-size: 3rem;
+    margin: 1rem 0;
+    background-color: #ffffff; 
+    color: #006703; 
+    box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+}
+
+#welcome-section {
+    font-size: 1.5rem;
+    margin: 1rem 0;
+    background-color: #ffffff; 
+    color: #006703; 
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+}
+
+#transaction-section input[type="text"] {
+    margin-left: 20px;
+}
+
+button {
+    display: inline-block;
+    padding: 3px 12px;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    background-color: #006703;
+    color: #fff; 
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #228333; 
+    transform: scale(1.15);
+}
+
+button:focus {
+    outline: none;
+}
+
+#TransactionSection {
+    text-align: center;
+    border: 2px solid #ffffff; 
+    border-radius: 10px;
+    padding: 20px; 
+    background-color: #f0f0f0; 
+}
