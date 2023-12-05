@@ -24,20 +24,27 @@ namespace BankSystemSQ
             {
                 accountDAL    = new AccountDAL();
 
+                // Grab customerID from the previous page
                 CustomerID = PreviousPageViewState["CustomerID"].ToString();
                 ViewState["CustomerID"] = CustomerID;
 
-                accountList = accountDAL.GetAccountInfo(CustomerID);             
+                // Get customer's accounts(cheque & saving) infromation 
+                accountList = accountDAL.GetAccountInfo(int.Parse(CustomerID));
+                
+                // Update the current blance display text in the main page
                 checkingAmountLiteral.Text = $"${accountList[kChequingIndex].Balance}";
                 savingAmountLiteral.Text = $"${accountList[1].Balance}";
                 
             }
             else
             {
+                // Grab customerID 
                 CustomerID = ViewState["CustomerID"].ToString();
 
-                accountList = accountDAL.GetAccountInfo(CustomerID);
+                // Get customer's accounts(cheque & saving) infromation 
+                accountList = accountDAL.GetAccountInfo(int.Parse(CustomerID));
 
+                // Update the current blance display text in the main page
                 checkingAmountLiteral.Text = $"${accountList[kChequingIndex].Balance}";
                 savingAmountLiteral.Text = $"${accountList[1].Balance}";
 
@@ -108,10 +115,11 @@ namespace BankSystemSQ
 
 
         /*
-         * Function	   : 
-         * Description :
-         * Parameters  : 
-         * Return      :  
+         * Function	   : TCWithdrawButton_Click()
+         * Description : This function will be executed when the user presses  the withdraw button
+         *               to withdraw money from the own account
+         * Parameters  : object sender, EventArgs e
+         * Return      : void
          */
         protected void TCWithdrawButton_Click(object sender, EventArgs e)
         {
@@ -171,6 +179,14 @@ namespace BankSystemSQ
             TransactionInput.Text = "";
         }
 
+
+        /*
+         * Function	   : TFDepositButton_Click()
+         * Description : This function is for transferring money between check account and saving account.     
+         *              Transfers the amount of money entered from the account selected by the user to another account.
+         * Parameters  : object sender, EventArgs e
+         * Return      : void
+         */
         public void TFDepositButton_Click(object sender, EventArgs e)
         {
 
@@ -235,8 +251,15 @@ namespace BankSystemSQ
             // Clear the text box
             TransactionInput.Text = "";
         }
-    
 
+
+        /*
+         * Function	   : SMDepositButton_Click()
+         * Description : This function is triggered when the customer presses the transfer button to transfer money from 
+         *              own account (check or saving) to another person's account.
+         * Parameters  : object sender, EventArgs e
+         * Return      : void
+         */
         public void SMDepositButton_Click(object sender, EventArgs e)
         {
             // Get the entered amount of money the client want to depoist

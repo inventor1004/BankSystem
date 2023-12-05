@@ -27,7 +27,13 @@ namespace BankDB
         }
 
 
-        public List<AccountEntity> GetAccountInfo (string CustomerID)
+        /*
+         * Function	   : GetAccountInfo()
+         * Description : Get cheque and saving account information such as AccountID and Balance
+         * Parameters  : int CustomerID - the forign key of Account table
+         * Return      : List<AccountEntity> - two AccountEntities will be returned if the process is successful.
+         */
+        public List<AccountEntity> GetAccountInfo (int CustomerID)
         {
             // SQL Syntax
             // >> Retrive  data from the Account table
@@ -43,7 +49,7 @@ namespace BankDB
                 // Read all data from the customer table
                 while (reader.Read())
                 {
-                    if (reader["CustomerID"].ToString() == CustomerID)
+                    if (reader["CustomerID"].ToString() == CustomerID.ToString())
                     {
                         AccountEntity account = new AccountEntity();  
                         account.AccountID = int.Parse(reader["AccountID"].ToString());
@@ -68,6 +74,14 @@ namespace BankDB
         }
 
 
+        /*
+         * Function	   : Deposit()
+         * Description : Add the requested money to the current balance in selected account
+         * Parameters  : int accountID        - Customer's accounID to specify the account 
+         *               double amountOfMoney - The amount of money the cusomer wants to depoist
+         * Return      : bool false - process failed 
+         *                    true  - process success
+         */
         public bool Deposit(int accountID, double amountOfMoney)
         {
             const bool kProcessFailed = false, kProcessSuccess = true;
@@ -101,6 +115,15 @@ namespace BankDB
             return kProcessSuccess;
         }
 
+
+        /*
+         * Function	  : Withdraw()
+         * Description : Wihdraw the requested money to the current balance in selected account
+         * Parameters  : int accountID        - Customer's accounID to specify the account 
+         *               double amountOfMoney - The amount of money the cusomer wants to witdraw
+         * Return      : bool false - process failed 
+         *                    true  - process success
+         */
         public bool Withdraw(int accountID, double amountOfMoney)
         {
             const bool kProcessFailed = false, kProcessSuccess = true;
@@ -135,6 +158,16 @@ namespace BankDB
         }
 
 
+        /*
+         * Function	   : Transfer()
+         * Description : withdraw the money from the selected customer's account 
+         *              and deposit the money to the different account
+         * Parameters  : int accountIDFrom    - The accountID which the money will be withdrawed
+         *               int toAccountID      - The accountID which the money will be depoisted
+         *               double amountOfMoney - Requsted transfer money
+         * Return      : bool false - process failed 
+         *                    true  - process success
+         */
         public bool Transfer(int accountIDFrom, int toAccountID, double amountOfMoney)
         {
             const bool kProcessFailed = false, kProcessSuccess = true;

@@ -31,7 +31,7 @@
             <br /> 
             <asp:TextBox  ID="LasName"         runat="server" placeholder="Last Name"/>
             <br /> 
-            <asp:Calendar ID="DateOfBirth"     runat="server" placeholder="Date Of Birth"/>
+            <asp:Calendar ID="DateOfBirth"     runat="server" placeholder="Date Of Birth" />
             <br /> 
             <asp:TextBox  ID="Address"         runat="server" placeholder="Address"/>
             <br /> 

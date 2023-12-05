@@ -168,6 +168,15 @@ namespace BankDB
         }
 
 
+        /*
+        * Function	  : LogInValidation()
+        * Description : Check whether the ID and PW pair exist in the customer table
+        *               for log-in validation
+        * Parameters  : string ID
+        *               string PW
+        * Return      : return customerID - Process success
+        *               return 0          - process failed
+        */
         public int LogInValidation(string ID, string PW)
         {
 

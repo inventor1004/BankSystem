@@ -33,7 +33,7 @@
                     <asp:ListItem Text="Chequing Account" Value="chequing" />
                     <asp:ListItem Text="Saving Account"   Value="saving" />
                 </asp:DropDownList>              
-                <asp:TextBox ID="TransactionInput"  runat="server" placeholder="Enter deposit amount" type="number"></asp:TextBox>
+                <asp:TextBox ID="TransactionInput"  runat="server" placeholder="Enter deposit amount" type="number" step="any"></asp:TextBox>
                 <asp:Button ID="TCDepositBtn"  runat="server" Text="Deposit" OnClick="TCDepositButton_Click" />
                 <asp:Button ID="TCWithdrawButton" runat="server" Text="Withdrawal" OnClick="TCWithdrawButton_Click" />
             </div>
@@ -55,7 +55,7 @@
                          <asp:ListItem Text="Saving Account"   Value="saving" />
                      </asp:DropDownList>
                 </div>
-                <asp:TextBox ID="TransferInput"  runat="server" placeholder="Enter deposit amount" type="number"></asp:TextBox>
+                <asp:TextBox ID="TransferInput"  runat="server" placeholder="Enter deposit amount" type="number" step="any"></asp:TextBox>
                 <asp:Button ID="TFDepositBtn"  runat="server" Text="Deposit" OnClick="TFDepositButton_Click" />
             </div>
             <br/>
@@ -72,7 +72,7 @@
                     <h3 style="margin-right: 10px; margin-left: 10px";> To </h3>
                     <asp:TextBox ID="ReceiverAccountNum" runat="server" placeholder="Receiver Account Number" type="number"/>
                 </div>
-                <asp:TextBox ID="TextBox1"  runat="server" placeholder="Enter deposit amount" type="number"></asp:TextBox>
+                <asp:TextBox ID="SendMoneyInput"  runat="server" placeholder="Enter deposit amount" type="number"></asp:TextBox>
                 <asp:Button ID="Button1"  runat="server" Text="Deposit" OnClick="SMDepositButton_Click" />
             </div>
 

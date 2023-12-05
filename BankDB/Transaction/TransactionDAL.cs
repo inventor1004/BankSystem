@@ -27,7 +27,7 @@ namespace BankDB
          * Parameters  :
          * Return      :           
          */
-        public bool AddNewTransaction(string senderAccountID, string receiverAccountID, string typeOfTransaction, string amountOfMoney)
+        public bool AddNewTransaction(int senderAccountID, int receiverAccountID, string typeOfTransaction, double amountOfMoney)
         {
             const bool kProcessFailed = false, kProcessSuccess = true;
 
