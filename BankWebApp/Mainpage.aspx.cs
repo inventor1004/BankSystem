@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.EnterpriseServices.CompensatingResourceManager;
 using System.Linq;
 using System.Reflection;
 using System.Web;
@@ -14,7 +15,8 @@ namespace BankSystemSQ
         AccountDAL accountDAL = new AccountDAL();
         List<AccountEntity> accountList = new List<AccountEntity>();
         string CustomerID;
-
+        const int kChequingIndex = 0, kSavingIndex = 1;
+        
         protected void Page_Load(object sender, EventArgs e)
         {
             
@@ -26,7 +28,7 @@ namespace BankSystemSQ
                 ViewState["CustomerID"] = CustomerID;
 
                 accountList = accountDAL.GetAccountInfo(CustomerID);             
-                checkingAmountLiteral.Text = $"${accountList[0].Balance}";
+                checkingAmountLiteral.Text = $"${accountList[kChequingIndex].Balance}";
                 savingAmountLiteral.Text = $"${accountList[1].Balance}";
                 
             }
@@ -36,7 +38,7 @@ namespace BankSystemSQ
 
                 accountList = accountDAL.GetAccountInfo(CustomerID);
 
-                checkingAmountLiteral.Text = $"${accountList[0].Balance}";
+                checkingAmountLiteral.Text = $"${accountList[kChequingIndex].Balance}";
                 savingAmountLiteral.Text = $"${accountList[1].Balance}";
 
             }
@@ -45,6 +47,12 @@ namespace BankSystemSQ
         }
 
 
+        /*
+         * Function	   : TCDepositButton_Click()
+         * Description : This function will be called when the client presses the button for the deposit to the their own account (chequing or saving)
+         * Parameters  : object sender, EventArgs e
+         * Return      : void
+         */
         protected void TCDepositButton_Click(object sender, EventArgs e)
         {
             // Get the entered amount of money the client want to depoist
@@ -62,11 +70,11 @@ namespace BankSystemSQ
             string selectedAccountType = TCaccountList.SelectedValue;
             if (selectedAccountType == "chequing")
             {
-                whichAccount = 0;
+                whichAccount = kChequingIndex;
             }
             else if (selectedAccountType == "saving")
             {
-                whichAccount = 1;
+                whichAccount = kSavingIndex;
             }
             else
             {
@@ -76,24 +84,22 @@ namespace BankSystemSQ
             }
 
             // Start deposit
-            isDesopistSucceess = accountDAL.Deposit(accountList[whichAccount].AccountID, depositAmount);
+            isDesopistSucceess = accountDAL.Deposit(accountList[whichAccount].AccountID, double.Parse(depositAmount));
 
             // if deposit is suceeded, updated the balance to the selected account
             if (isDesopistSucceess == true)
             {
-                string preBalance = accountList[whichAccount].Balance;
-                double updatedBalace = double.Parse(preBalance) + double.Parse(depositAmount);
-                accountList[whichAccount].Balance = updatedBalace.ToString();
+                accountList[whichAccount].Balance = accountList[whichAccount].Balance + double.Parse(depositAmount);
             }
 
             // update the current balance display
-            if (whichAccount == 0)
+            if (whichAccount == kChequingIndex)
             {
-                checkingAmountLiteral.Text = $"${accountList[0].Balance}";
+                checkingAmountLiteral.Text = $"${accountList[kChequingIndex].Balance}";
             }
             else
             {
-                savingAmountLiteral.Text = $"${accountList[1].Balance}";
+                savingAmountLiteral.Text = $"${accountList[kSavingIndex].Balance}";
             }
 
             // Clear the text box
@@ -101,6 +107,12 @@ namespace BankSystemSQ
         }
 
 
+        /*
+         * Function	   : 
+         * Description :
+         * Parameters  : 
+         * Return      :  
+         */
         protected void TCWithdrawButton_Click(object sender, EventArgs e)
         {
 
@@ -119,15 +131,15 @@ namespace BankSystemSQ
             string selectedAccountType = TCaccountList.SelectedValue;
             if (selectedAccountType == "chequing")
             {
-                whichAccount = 0;
+                whichAccount = kChequingIndex;
                 // cancle the withdraw transaction if the client trys to withdraw more money than the current balance
-                if (double.Parse(depositAmount) > double.Parse(accountList[whichAccount].Balance)) return;
+                if (double.Parse(depositAmount) > accountList[whichAccount].Balance) return;
             }
             else if (selectedAccountType == "saving")
             {
-                whichAccount = 1;
+                whichAccount = kSavingIndex;
                 // cancle the witdraw transaction if the client trys to withdraw more money than the current balance
-                if (double.Parse(depositAmount) > double.Parse(accountList[whichAccount].Balance)) return;
+                if (double.Parse(depositAmount) > accountList[whichAccount].Balance) return;
             }
             else
             {
@@ -137,24 +149,22 @@ namespace BankSystemSQ
             }
 
             // Start withdrawing
-            isWithdrawSucceess = accountDAL.Withdraw(accountList[whichAccount].AccountID, depositAmount);
+            isWithdrawSucceess = accountDAL.Withdraw(accountList[whichAccount].AccountID, double.Parse(depositAmount));
 
             // if deposit is suceeded, updated the balance to the selected account
             if (isWithdrawSucceess == true)
             {
-                string preBalance = accountList[whichAccount].Balance;
-                double updatedBalace = double.Parse(preBalance) - double.Parse(depositAmount);
-                accountList[whichAccount].Balance = updatedBalace.ToString();
+                accountList[whichAccount].Balance = accountList[whichAccount].Balance - double.Parse(depositAmount);
             }
 
             // update the current balance display
-            if (whichAccount == 0)
+            if (whichAccount == kChequingIndex)
             {
-                checkingAmountLiteral.Text = $"${accountList[0].Balance}";
+                checkingAmountLiteral.Text = $"${accountList[kChequingIndex].Balance}";
             }
             else
             {
-                savingAmountLiteral.Text = $"${accountList[1].Balance}";
+                savingAmountLiteral.Text = $"${accountList[kSavingIndex].Balance}";
             }
 
             // Clear the text box
@@ -165,24 +175,132 @@ namespace BankSystemSQ
         {
 
             // Get the entered amount of money the client want to depoist
-            string depositAmount = TransferInput.Text;
-            int AccountFrom;
-            int AccountTo;
+            string TransferAmount = TransferInput.Text;
+            string AccountFrom = TSFromAccountList.SelectedValue;
+            string AccountTo = TSToAccountList.SelectedValue;
+
+            int whichAccountToWithdraw;
+            int whichAccountToDeposit;
             bool isTrensferSucceess;
 
-            // if the user does not enter amount of money or enter negative value, return;
-            if (depositAmount == "" || double.Parse(depositAmount) < 0)
+            // if the user
+            // 1. does not enter amount of money
+            // 2. enter negative value
+            // 3. selects the same account for trensfer
+            // return
+            if (TransferAmount == "" || double.Parse(TransferAmount) < 0 || AccountFrom == AccountTo)
             {
                 return;
             }
 
 
+            // Check which account the user is trying to deposit into
+            if (AccountFrom == "chequing")
+            {
+                whichAccountToWithdraw = kChequingIndex;
+                whichAccountToDeposit = kSavingIndex;
+                // cancle the withdraw transaction if the client trys to withdraw more money than the current balance
+                if (double.Parse(TransferAmount) > accountList[whichAccountToWithdraw].Balance) return;
 
+            }
+            else if (AccountFrom == "saving")
+            {
+                whichAccountToWithdraw = kSavingIndex;
+                whichAccountToDeposit = kChequingIndex;
+                // cancle the witdraw transaction if the client trys to withdraw more money than the current balance
+                if (double.Parse(TransferAmount) > accountList[whichAccountToWithdraw].Balance) return;
+            }
+            else
+            {
+                // Client did not selcet the account
+                ShowMessage("Please Selcet account to withdraw.");
+                return;
+            }
+
+            // start the transfer
+            isTrensferSucceess = accountDAL.Transfer(accountList[whichAccountToWithdraw].AccountID,
+                                                     accountList[whichAccountToDeposit].AccountID,
+                                                     double.Parse(TransferAmount));
+
+            // if deposit is suceeded, updated the balance to the selected account
+            if (isTrensferSucceess == true)
+            {
+                accountList[whichAccountToWithdraw].Balance = accountList[whichAccountToWithdraw].Balance - double.Parse(TransferAmount);
+                accountList[whichAccountToDeposit].Balance = accountList[whichAccountToDeposit].Balance + double.Parse(TransferAmount);
+
+                checkingAmountLiteral.Text = $"${accountList[kChequingIndex].Balance}";
+                savingAmountLiteral.Text = $"${accountList[kSavingIndex].Balance}";
+            }
+
+            // Clear the text box
+            TransactionInput.Text = "";
         }
+    
 
         public void SMDepositButton_Click(object sender, EventArgs e)
         {
+            // Get the entered amount of money the client want to depoist
+            string TransferAmount = SendMoneyInput.Text;
+            string AccountFrom = SMFromAccountList.SelectedValue;
+            string AccountTo = ReceiverAccountNum.Text;
 
+            int whichAccountToWithdraw;
+            bool isSendingSucceess;
+
+            // if the user
+            // 1. does not enter amount of money
+            // 2. enter negative value
+            // 3. selects the same account for trensfer
+            // return
+            if (TransferAmount == "" || double.Parse(TransferAmount) < 0 || AccountFrom == AccountTo)
+            {
+                return;
+            }
+
+
+            // Check which account the user is trying to deposit into
+            if (AccountFrom == "chequing")
+            {
+                whichAccountToWithdraw = kChequingIndex;
+                // cancle the withdraw transaction if the client trys to withdraw more money than the current balance
+                if (double.Parse(TransferAmount) > accountList[whichAccountToWithdraw].Balance) return;
+
+            }
+            else if (AccountFrom == "saving")
+            {
+                whichAccountToWithdraw = kSavingIndex;
+                // cancle the witdraw transaction if the client trys to withdraw more money than the current balance
+                if (double.Parse(TransferAmount) > accountList[whichAccountToWithdraw].Balance) return;
+            }
+            else
+            {
+                // Client did not selcet the account
+                ShowMessage("Please Selcet account to withdraw.");
+                return;
+            }
+
+            // start the transfer
+            isSendingSucceess = accountDAL.Transfer(accountList[whichAccountToWithdraw].AccountID,
+                                                    int.Parse(AccountTo),
+                                                    double.Parse(TransferAmount));
+
+            // if deposit is suceeded, updated the balance to the selected account
+            if (isSendingSucceess == true)
+            {
+                accountList[whichAccountToWithdraw].Balance = accountList[whichAccountToWithdraw].Balance - double.Parse(TransferAmount);
+
+                if(whichAccountToWithdraw == kChequingIndex)
+                {
+                    checkingAmountLiteral.Text = $"${accountList[kChequingIndex].Balance}";
+                }
+                else if (whichAccountToWithdraw == kSavingIndex)
+                {
+                    savingAmountLiteral.Text = $"${accountList[kSavingIndex].Balance}";
+                }
+            }
+
+            // Clear the text box
+            TransactionInput.Text = "";
         }
 
         private void UpdateCheckingBalance()
