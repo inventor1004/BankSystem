@@ -98,7 +98,7 @@ namespace BankDB
                 while (reader.Read())
                 {
                     CustomerEntity entity = new CustomerEntity();
-                    entity.CustomerID  = reader["CustomerID"].ToString();
+                    entity.CustomerID  = int.Parse(reader["CustomerID"].ToString());
                     entity.Password    = reader["Password"].ToString();
                     entity.FirstName   = reader["FirstName"].ToString();
                     entity.LastName    = reader["LastName"].ToString();
@@ -168,7 +168,7 @@ namespace BankDB
         }
 
 
-        public string LogInValidation(string ID, string PW)
+        public int LogInValidation(string ID, string PW)
         {
 
             // SQL Syntax
@@ -182,7 +182,7 @@ namespace BankDB
                 while (reader.Read())
                 {
                     CustomerEntity entity = new CustomerEntity();
-                    entity.CustomerID = reader["CustomerID"].ToString();
+                    entity.CustomerID = int.Parse(reader["CustomerID"].ToString());
                     entity.ID         = reader["ID"].ToString();
                     entity.Password   = reader["Password"].ToString();                 
 
@@ -202,7 +202,7 @@ namespace BankDB
                 connection.Close();
             }
 
-            return string.Empty;
+            return 0;
         }
     }
 }
