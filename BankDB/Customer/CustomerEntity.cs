@@ -8,7 +8,7 @@ namespace BankDB
 {
     public class CustomerEntity
     {
-        public string CustomerID { get; set; }
+        public int CustomerID { get; set; }
         public string ID { get; set; }
         public string Password { get; set; }
         public string FirstName { get; set; }
