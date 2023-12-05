@@ -8,9 +8,9 @@ namespace BankDB
     public class AccountEntity
     {
 
-        public string AccountID { get; set; }
-        public string CustomerID {  get; set; }
-        public string Balance { get; set; }
+        public int AccountID { get; set; }
+        public int CustomerID {  get; set; }
+        public double Balance { get; set; }
         public string AccountType { get; set; }
 
     }

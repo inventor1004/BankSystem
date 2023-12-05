@@ -132,13 +132,13 @@ namespace BankSystemSQ
         protected global::System.Web.UI.WebControls.TextBox ReceiverAccountNum;
 
         /// <summary>
-        /// TextBox1 control.
+        /// SendMoneyInput control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TextBox1;
+        protected global::System.Web.UI.WebControls.TextBox SendMoneyInput;
 
         /// <summary>
         /// Button1 control.

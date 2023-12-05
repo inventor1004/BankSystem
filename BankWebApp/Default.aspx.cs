@@ -22,9 +22,9 @@ namespace BankSystemSQ
             string password = userPW.Text.Trim();
 
             // Check whether the customer ID and PW are match and exist in the customer table
-            string customerID = customerDAL.LogInValidation(ID, password);
+            int customerID = customerDAL.LogInValidation(ID, password);
 
-            if (customerID != string.Empty)
+            if (customerID != 0)
             {
                 ViewState["CustomerID"] = customerID;
 

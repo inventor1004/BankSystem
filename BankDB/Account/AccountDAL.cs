@@ -46,9 +46,9 @@ namespace BankDB
                     if (reader["CustomerID"].ToString() == CustomerID)
                     {
                         AccountEntity account = new AccountEntity();  
-                        account.AccountID = reader["AccountID"].ToString();
-                        account.CustomerID = reader["CustomerID"].ToString();
-                        account.Balance = reader["Balance"].ToString();
+                        account.AccountID = int.Parse(reader["AccountID"].ToString());
+                        account.CustomerID = int.Parse(reader["CustomerID"].ToString());
+                        account.Balance = double.Parse(reader["Balance"].ToString());
                         account.AccountType = reader["AccountType"].ToString();
 
                         accountList.Add(account);
@@ -68,7 +68,7 @@ namespace BankDB
         }
 
 
-        public bool Deposit(string accountID, string amountOfMoney)
+        public bool Deposit(int accountID, double amountOfMoney)
         {
             const bool kProcessFailed = false, kProcessSuccess = true;
 
@@ -101,7 +101,7 @@ namespace BankDB
             return kProcessSuccess;
         }
 
-        public bool Withdraw(string accountID, string amountOfMoney)
+        public bool Withdraw(int accountID, double amountOfMoney)
         {
             const bool kProcessFailed = false, kProcessSuccess = true;
 
@@ -135,19 +135,18 @@ namespace BankDB
         }
 
 
-        public bool Transfer(string accountIDFrom, string toAccountID, string amountOfMoney)
+        public bool Transfer(int accountIDFrom, int toAccountID, double amountOfMoney)
         {
             const bool kProcessFailed = false, kProcessSuccess = true;
 
             // SQL Syntax
             // >> Check whether the receiver's account exist or not
-            string sqlCmdFindID = $"SELECT AccountID FROM `Account` WHERE AccountID = 1;";
+            string sqlCmdFindID = $"SELECT AccountID FROM `Account` WHERE AccountID = {toAccountID};";
 
             // Prepare to witdraw from the sender's account and 
             // to deposit to the receiver's account
             // if the receiver's account exist in the account table
-            string sqlCmdWitdraw = string.Empty;
-            string sqlCmdDeposit = string.Empty;
+            string sqlCmdTransfer = string.Empty;
 
 
             try
@@ -155,16 +154,34 @@ namespace BankDB
                 command.CommandText = sqlCmdFindID;
                 connection.Open();
                 reader = command.ExecuteReader();
+                reader.Read();
+                int accountID = int.Parse(reader["AccountID"].ToString());
 
-                while (reader.Read())
+                // if ID and Password are found in the customer table, return the customerID
+                if (accountID == toAccountID)
                 {
-                    string accountID = reader["AccountID"].ToString();
+                    sqlCmdTransfer = $"UPDATE `Account` SET Balance = Balance - {amountOfMoney} WHERE AccountID = {accountIDFrom};";
+                
+                }
 
-                    // if ID and Password are found in the customer table, return the customerID
-                    if (accountID == toAccountID)
-                    {
-                        sqlCmdWitdraw = $"";
-                    }
+                // Check whether the reviever's account exist in the Account table or not
+                if(sqlCmdTransfer == string.Empty)
+                {
+                    return kProcessFailed;
+                }
+                else
+                {
+                    // reset the connection
+                    connection.Close();
+                    connection.Open();
+
+                    // If reviever's account exist, start transfering
+                    command.CommandText = sqlCmdTransfer;
+                    command.ExecuteNonQuery();
+
+                    sqlCmdTransfer = $"UPDATE `Account` SET Balance = Balance + {amountOfMoney} WHERE AccountID = {toAccountID};";
+                    command.CommandText = sqlCmdTransfer;
+                    command.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
@@ -177,7 +194,7 @@ namespace BankDB
             }
 
             // add new transaction recode to the transaction table
-            // transactionDAL.AddNewTransaction(accountID, accountID, "withdraw", amountOfMoney);
+            transactionDAL.AddNewTransaction(accountIDFrom, toAccountID, "transfer", amountOfMoney);
             return kProcessSuccess;
         }
     }
