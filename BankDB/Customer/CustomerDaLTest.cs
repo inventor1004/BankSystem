@@ -78,7 +78,7 @@ namespace BankDB
 
             foreach (CustomerEntity customer in customerData)
             {
-                if(customer.CustomerID != null)
+                if(customer.CustomerID != 0)
                 {
                     ++numberOfRow;
                 }    
@@ -117,8 +117,8 @@ namespace BankDB
                 reader.Read();
 
                 CustomerEntity entity = new CustomerEntity();
-                entity.CustomerID = reader["CustomerID"].ToString();
-                tempCustomerID = int.Parse(entity.CustomerID);
+                entity.CustomerID = int.Parse(reader["CustomerID"].ToString());
+                tempCustomerID = entity.CustomerID;
             }
             catch (Exception ex)
             {
